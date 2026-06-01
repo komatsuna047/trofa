@@ -43,7 +43,6 @@ export default function TrofaPage() {
     const startAutoPlay = () => {
       intervalId = setInterval(() => {
         if (carousel) {
-          // 隙間をなくしたため、カード＋連結テープの合計幅がそのまま1コマ分になります
           const firstItem = carousel.children[0] as HTMLElement;
           const itemWidth = firstItem ? firstItem.offsetWidth : 300;
           carousel.scrollBy({ left: itemWidth, behavior: 'smooth' });
@@ -148,11 +147,11 @@ export default function TrofaPage() {
           <div className="absolute inset-0 opacity-80" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #050914 0px, #050914 20px, transparent 20px, transparent 40px)' }}></div>
         </div>
 
-        {/* 横スクロール・コマコンテナ */}
+        {/* 🌟 横スクロール・コマコンテナ (items-stretch に変更し、pyを削除してテープが上下に届くように) */}
         <div 
           ref={carouselRef}
           onScroll={handleScroll}
-          className="w-full flex items-center overflow-x-auto snap-x snap-mandatory py-8 relative bg-[#0a0203] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-[20vw] md:px-[30vw]"
+          className="w-full flex items-stretch overflow-x-auto snap-x snap-mandatory relative bg-[#0a0203] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-[20vw] md:px-[30vw]"
           style={{ 
             scrollBehavior: 'smooth',
             WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
@@ -160,10 +159,10 @@ export default function TrofaPage() {
           }}
         >
           {extendedFeatures.map((f, i) => (
-            <div key={i} className="flex-shrink-0 snap-center flex items-center">
+            <div key={i} className="flex-shrink-0 snap-center flex items-stretch">
               
-              {/* 🌟 カード本体（隙間マージンmx-2を削除） */}
-              <div className="w-[65vw] md:w-[32vw] max-w-md bg-[#1a0508] border border-[#d4af37]/30 rounded-xl shadow-2xl flex flex-col p-4 relative group z-10">
+              {/* 🌟 カード本体（上下にマージンを持たせて帯から離し、左右にマージンを持たせてテープから離す） */}
+              <div className="w-[65vw] md:w-[32vw] max-w-md bg-[#1a0508] border border-[#d4af37]/30 rounded-xl shadow-2xl flex flex-col p-4 my-8 md:my-10 mx-2 md:mx-4 relative group z-10">
                 
                 {/* 📸 画像プレースホルダー */}
                 <div className="w-full aspect-video bg-[#050914] rounded-lg flex items-center justify-center border-2 border-dashed border-[#d4af37]/50 relative overflow-hidden cursor-pointer">
@@ -182,12 +181,14 @@ export default function TrofaPage() {
                 </div>
               </div>
 
-              {/* 🌟 赤い連結テープ（隙間マージンを削除し、枠線は上下のみに） */}
+              {/* 🌟 赤い連結テープ（上下の帯にピッタリくっつくように items-stretch で広がり、左右に少し隙間） */}
               {i !== extendedFeatures.length - 1 && (
-                <div className="w-[4vw] md:w-[2vw] h-16 md:h-24 bg-gradient-to-b from-[#8b0000] via-[#d71b3b] to-[#8b0000] flex flex-col justify-evenly items-center shadow-[inset_0_0_10px_rgba(0,0,0,0.8)] border-y border-[#d4af37]/40 relative z-0">
-                  <div className="w-full h-[1px] bg-black/60"></div>
-                  <div className="w-full h-[1px] bg-black/60"></div>
-                  <div className="w-full h-[1px] bg-black/60"></div>
+                <div className="w-[4vw] md:w-[2.5vw] bg-gradient-to-b from-[#8b0000] via-[#d71b3b] to-[#8b0000] flex flex-col justify-evenly items-center shadow-[inset_0_0_10px_rgba(0,0,0,0.8)] border-x border-[#d4af37]/40 relative z-0 mx-2 md:mx-3">
+                  <div className="w-full h-[2px] bg-black/60"></div>
+                  <div className="w-full h-[2px] bg-black/60"></div>
+                  <div className="w-full h-[2px] bg-black/60"></div>
+                  <div className="w-full h-[2px] bg-black/60"></div>
+                  <div className="w-full h-[2px] bg-black/60"></div>
                 </div>
               )}
             </div>
