@@ -7,7 +7,6 @@ export default function Home() {
   const balloonsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // 風船のアニメーション（ヒーローセクション内のみで動かす）
     if (balloonsRef.current) {
       const balloons = balloonsRef.current.children;
       Array.from(balloons).forEach((balloon) => {
@@ -39,32 +38,54 @@ export default function Home() {
   const balloonColors = ['bg-[#d4af37]', 'bg-[#8b0000]', 'bg-[#1a2a5e]', 'bg-[#ffb703]'];
 
   return (
-    // min-h-screen で全体を囲み、スクロール可能にする（overflow-hiddenを削除）
-    <main className="min-h-screen bg-[#050914] text-white font-sans">
+    <main className="min-h-screen bg-[#050914] text-white font-sans relative">
       
+      {/* =========================================
+          共通装飾：両端のビデオフィルム（チケット）風の縁
+      ========================================= */}
+      {/* 左側の縁 */}
+      <div className="fixed top-0 left-0 w-6 md:w-8 h-full bg-[#3a0810] z-40 border-r-[3px] border-[#d4af37] shadow-[10px_0_20px_rgba(0,0,0,0.9)] flex justify-center py-2 opacity-95">
+        {/* フィルムの穴（パーフォレーション）を表現した点線 */}
+        <div className="w-full mx-1 h-full border-x-[4px] border-dashed border-[#d4af37]/40"></div>
+      </div>
+
+      {/* 右側の縁 */}
+      <div className="fixed top-0 right-0 w-6 md:w-8 h-full bg-[#3a0810] z-40 border-l-[3px] border-[#d4af37] shadow-[-10px_0_20px_rgba(0,0,0,0.9)] flex justify-center py-2 opacity-95">
+        <div className="w-full mx-1 h-full border-x-[4px] border-dashed border-[#d4af37]/40"></div>
+      </div>
+
       {/* =========================================
           1. ヒーローセクション（トップ画面）
       ========================================= */}
       <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
         
+        {/* 上部の装飾：サーカステントの天幕（復刻） */}
+        <div 
+          className="absolute top-0 left-0 w-full h-16 md:h-24 z-30 shadow-[0_20px_40px_rgba(0,0,0,0.9)] border-b-4 border-[#d4af37]"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(90deg, #6b0f1a 0px, #6b0f1a 40px, #e8dcc5 40px, #e8dcc5 80px)',
+            borderRadius: '0 0 30% 30% / 0 0 100% 100%'
+          }}
+        >
+          {/* テント内部の暗がり（立体感） */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-transparent rounded-[inherit]"></div>
+        </div>
+
         {/* 背景：ぼかした巨大なサーカステントと夜空のグラデーション */}
-        <div className="absolute inset-0 z-0">
-          {/* しましまのテント模様をぼかして配置 */}
+        <div className="absolute inset-0 z-0 px-8"> {/* 左右の縁に被らないよう余白を確保 */}
           <div 
-            className="absolute inset-0 opacity-40 blur-[8px]"
+            className="absolute inset-0 opacity-30 blur-[8px]"
             style={{
               backgroundImage: 'repeating-linear-gradient(105deg, #4a0810 0%, #4a0810 5%, #1a0205 5%, #1a0205 10%)',
-              transform: 'scale(1.1)' // ぼかしの端が切れないように少し拡大
+              transform: 'scale(1.1)'
             }}
           ></div>
-          {/* 下に向かって暗くなるグラデーションで文字を目立たせる */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#050914]/40 via-[#050914]/70 to-[#050914]"></div>
-          {/* 中央のスポットライト */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#d4af37]/15 to-transparent rounded-[100%] blur-3xl mix-blend-screen"></div>
         </div>
 
         {/* 風船 */}
-        <div ref={balloonsRef} className="absolute inset-0 pointer-events-none z-10 opacity-50">
+        <div ref={balloonsRef} className="absolute inset-0 pointer-events-none z-10 opacity-50 px-8">
           {[...Array(12)].map((_, i) => (
             <div
               key={i}
@@ -77,8 +98,8 @@ export default function Home() {
           ))}
         </div>
 
-        {/* メインテキスト（看板ではなく直接配置） */}
-        <div className="relative z-20 flex flex-col items-center text-center px-4 mt-10">
+        {/* メインテキスト */}
+        <div className="relative z-20 flex flex-col items-center text-center px-8 mt-10">
           <div className="text-[#d4af37] text-lg md:text-xl tracking-[0.4em] font-serif mb-6 flex items-center gap-4 opacity-90">
             <span className="text-2xl text-[#d4af37]/70">✦</span> 
             THE MAGIC OF TIME 
@@ -93,25 +114,22 @@ export default function Home() {
             あなたの1日を、<br className="md:hidden" />最高のアトラクションに。
           </p>
           
-          {/* 下へスクロールを促すボタン */}
           <a href="#about" className="group relative px-12 py-5 bg-gradient-to-b from-[#d4af37] to-[#9c7811] text-[#050914] rounded-full font-bold text-lg transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.6)] hover:-translate-y-1 tracking-widest overflow-hidden inline-block">
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
             入場する
           </a>
         </div>
         
-        {/* 下スクロールインジケーター */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center animate-bounce opacity-70">
           <span className="text-[#d4af37] text-xs tracking-widest mb-2 font-serif">SCROLL</span>
           <div className="w-0.5 h-12 bg-gradient-to-b from-[#d4af37] to-transparent"></div>
         </div>
-
       </section>
 
       {/* =========================================
-          2. ABOUTセクション（スクロール後）
+          2. ABOUTセクション
       ========================================= */}
-      <section id="about" className="relative w-full py-32 px-6 flex flex-col items-center bg-[#050914]">
+      <section id="about" className="relative w-full py-32 px-12 flex flex-col items-center bg-[#050914] z-10">
         <div className="max-w-4xl w-full text-center">
           
           <div className="text-[#d4af37] text-4xl mb-6">🎪</div>
