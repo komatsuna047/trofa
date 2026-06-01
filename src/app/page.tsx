@@ -10,13 +10,9 @@ export default function Home() {
   const balloonsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // GSAPのプラグインを登録
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-    // Next.jsでGSAPを安全に動かすためのコンテキスト（クリーンアップ用）
     const ctx = gsap.context(() => {
-      
-      // 1. 風船のアニメーション
       if (balloonsRef.current) {
         const balloons = balloonsRef.current.children;
         Array.from(balloons).forEach((balloon) => {
@@ -44,8 +40,6 @@ export default function Home() {
         });
       }
 
-      // 2. ABOUTセクションのスクロールアニメーション
-      // #about セクションが画面の80%の高さに来たら発動
       gsap.from('.about-animate', {
         scrollTrigger: {
           trigger: '#about',
@@ -54,39 +48,86 @@ export default function Home() {
         opacity: 0,
         y: 50,
         duration: 1,
-        stagger: 0.2, // 複数の要素を0.2秒ずらして順番に出現させる
+        stagger: 0.2,
         ease: 'power3.out',
       });
-
     }, mainRef);
 
-    return () => ctx.revert(); // コンポーネントが破棄されたらアニメーションもリセット
+    return () => ctx.revert();
   }, []);
 
-  // 3. ボタンを押した時のスムーススクロール処理
   const handleEnterClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // #about の位置まで、1.2秒かけて少し緩急（power3.inOut）をつけて移動
     gsap.to(window, { duration: 1.2, scrollTo: '#about', ease: 'power3.inOut' });
   };
 
   const balloonColors = ['bg-[#d4af37]', 'bg-[#8b0000]', 'bg-[#1a2a5e]', 'bg-[#ffb703]'];
 
   return (
-    <main ref={mainRef} className="min-h-screen bg-[#050914] text-white font-sans relative">
+    <main ref={mainRef} className="min-h-screen bg-[#050914] text-white font-sans relative overflow-x-hidden">
       
-      {/* 共通装飾：両端のビデオフィルム（チケット）風の縁 */}
-      <div className="fixed top-0 left-0 w-6 md:w-8 h-full bg-[#3a0810] z-40 border-r-[3px] border-[#d4af37] shadow-[10px_0_20px_rgba(0,0,0,0.9)] flex justify-center py-2 opacity-95">
-        <div className="w-full mx-1 h-full border-x-[4px] border-dashed border-[#d4af37]/40"></div>
-      </div>
-      <div className="fixed top-0 right-0 w-6 md:w-8 h-full bg-[#3a0810] z-40 border-l-[3px] border-[#d4af37] shadow-[-10px_0_20px_rgba(0,0,0,0.9)] flex justify-center py-2 opacity-95">
-        <div className="w-full mx-1 h-full border-x-[4px] border-dashed border-[#d4af37]/40"></div>
+      {/* =========================================
+          外装：赤い舞台幕（手前 z-50）とビデオテープ（奥 z-40）
+      ========================================= */}
+      
+      {/* --- 左側 --- */}
+      {/* 1. 左の赤い舞台幕（ドレープ） */}
+      <div className="fixed top-0 left-0 h-full w-16 md:w-32 z-50 pointer-events-none flex flex-col filter drop-shadow-[10px_0_15px_rgba(0,0,0,0.8)]">
+        {/* 幕の上部 */}
+        <div 
+          className="flex-grow-[6] w-full bg-gradient-to-r from-[#4a0810] via-[#d71b3b] to-[#8b0000] relative overflow-hidden"
+          style={{ borderBottomRightRadius: '100% 150%' }}
+        >
+          {/* 布のシワ（陰影） */}
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0%,rgba(0,0,0,0.4)_15%,transparent_30%)] mix-blend-multiply"></div>
+        </div>
+        {/* 結び目（ゴールドのタッセル） */}
+        <div className="h-4 md:h-8 w-[80%] bg-gradient-to-b from-[#fff7d6] via-[#d4af37] to-[#8b6508] rounded-full -mt-2 md:-mt-4 ml-[10%] relative z-10 shadow-[0_5px_10px_rgba(0,0,0,0.8)] border border-yellow-200/50"></div>
+        {/* 幕の下部 */}
+        <div 
+          className="flex-grow-[4] w-[85%] bg-gradient-to-r from-[#4a0810] via-[#d71b3b] to-[#8b0000] -mt-2 md:-mt-4 relative overflow-hidden"
+          style={{ borderTopRightRadius: '100% 150%' }}
+        >
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0%,rgba(0,0,0,0.4)_15%,transparent_30%)] mix-blend-multiply"></div>
+        </div>
       </div>
 
-      {/* 1. ヒーローセクション */}
+      {/* 2. 左のビデオテープ（幕の内側に少し隠れるように配置） */}
+      <div className="fixed top-0 left-[40px] md:left-[100px] w-4 md:w-8 h-full bg-[#3a0810] z-40 border-r-[2px] md:border-r-[3px] border-[#d4af37] shadow-[10px_0_20px_rgba(0,0,0,0.9)] flex justify-center py-2 opacity-95">
+        <div className="w-full mx-1 h-full border-x-[2px] md:border-x-[4px] border-dashed border-[#d4af37]/40"></div>
+      </div>
+
+
+      {/* --- 右側 --- */}
+      {/* 1. 右の赤い舞台幕（ドレープ） */}
+      <div className="fixed top-0 right-0 h-full w-16 md:w-32 z-50 pointer-events-none flex flex-col filter drop-shadow-[-10px_0_15px_rgba(0,0,0,0.8)]">
+        <div 
+          className="flex-grow-[6] w-full bg-gradient-to-l from-[#4a0810] via-[#d71b3b] to-[#8b0000] relative overflow-hidden"
+          style={{ borderBottomLeftRadius: '100% 150%' }}
+        >
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(270deg,transparent_0%,rgba(0,0,0,0.4)_15%,transparent_30%)] mix-blend-multiply"></div>
+        </div>
+        <div className="h-4 md:h-8 w-[80%] bg-gradient-to-b from-[#fff7d6] via-[#d4af37] to-[#8b6508] rounded-full -mt-2 md:-mt-4 mr-[10%] ml-auto relative z-10 shadow-[0_5px_10px_rgba(0,0,0,0.8)] border border-yellow-200/50"></div>
+        <div 
+          className="flex-grow-[4] w-[85%] bg-gradient-to-l from-[#4a0810] via-[#d71b3b] to-[#8b0000] -mt-2 md:-mt-4 ml-auto relative overflow-hidden"
+          style={{ borderTopLeftRadius: '100% 150%' }}
+        >
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(270deg,transparent_0%,rgba(0,0,0,0.4)_15%,transparent_30%)] mix-blend-multiply"></div>
+        </div>
+      </div>
+
+      {/* 2. 右のビデオテープ */}
+      <div className="fixed top-0 right-[40px] md:right-[100px] w-4 md:w-8 h-full bg-[#3a0810] z-40 border-l-[2px] md:border-l-[3px] border-[#d4af37] shadow-[-10px_0_20px_rgba(0,0,0,0.9)] flex justify-center py-2 opacity-95">
+        <div className="w-full mx-1 h-full border-x-[2px] md:border-x-[4px] border-dashed border-[#d4af37]/40"></div>
+      </div>
+
+
+      {/* =========================================
+          コンテンツセクション
+      ========================================= */}
       <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
         
-        {/* 上部の天幕装飾 */}
+        {/* 上部の天幕装飾 (z-30) 舞台幕の後ろを通り抜けるように */}
         <div 
           className="absolute top-0 left-0 w-full h-16 md:h-24 z-30 shadow-[0_20px_40px_rgba(0,0,0,0.9)] border-b-4 border-[#d4af37]"
           style={{
@@ -98,7 +139,7 @@ export default function Home() {
         </div>
 
         {/* 背景 */}
-        <div className="absolute inset-0 z-0 px-8">
+        <div className="absolute inset-0 z-0">
           <div 
             className="absolute inset-0 opacity-30 blur-[8px]"
             style={{
@@ -111,7 +152,7 @@ export default function Home() {
         </div>
 
         {/* 風船 */}
-        <div ref={balloonsRef} className="absolute inset-0 pointer-events-none z-10 opacity-50 px-8">
+        <div ref={balloonsRef} className="absolute inset-0 pointer-events-none z-10 opacity-50">
           {[...Array(12)].map((_, i) => (
             <div
               key={i}
@@ -124,26 +165,25 @@ export default function Home() {
           ))}
         </div>
 
-        {/* メインテキスト */}
-        <div className="relative z-20 flex flex-col items-center text-center px-8 mt-10">
-          <div className="text-[#d4af37] text-lg md:text-xl tracking-[0.4em] font-serif mb-6 flex items-center gap-4 opacity-90">
-            <span className="text-2xl text-[#d4af37]/70">✦</span> 
+        {/* メインテキスト（左右の幕を避けるため padding を大きく確保） */}
+        <div className="relative z-20 flex flex-col items-center text-center px-[60px] md:px-[160px] mt-10 w-full">
+          <div className="text-[#d4af37] text-sm md:text-xl tracking-[0.4em] font-serif mb-6 flex items-center gap-2 md:gap-4 opacity-90">
+            <span className="text-xl md:text-2xl text-[#d4af37]/70">✦</span> 
             THE MAGIC OF TIME 
-            <span className="text-2xl text-[#d4af37]/70">✦</span>
+            <span className="text-xl md:text-2xl text-[#d4af37]/70">✦</span>
           </div>
 
-          <h1 className="text-7xl md:text-[140px] font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff7d6] via-[#d4af37] to-[#aa7c11] tracking-widest drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] font-serif py-2 mb-4 leading-none">
+          <h1 className="text-6xl md:text-[140px] font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff7d6] via-[#d4af37] to-[#aa7c11] tracking-widest drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] font-serif py-2 mb-4 leading-none">
             trofa
           </h1>
           
-          <p className="text-xl md:text-3xl text-gray-200 font-medium tracking-[0.2em] mt-4 mb-14 drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
+          <p className="text-sm md:text-3xl text-gray-200 font-medium tracking-[0.2em] mt-4 mb-14 drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
             あなたの1日を、<br className="md:hidden" />最高のアトラクションに。
           </p>
           
-          {/* ボタンの挙動を onClick ＆ スムーススクロール に変更 */}
           <button 
             onClick={handleEnterClick} 
-            className="group relative px-12 py-5 bg-gradient-to-b from-[#d4af37] to-[#9c7811] text-[#050914] rounded-full font-bold text-lg transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.6)] hover:-translate-y-1 tracking-widest overflow-hidden inline-block cursor-pointer"
+            className="group relative px-8 md:px-12 py-4 md:py-5 bg-gradient-to-b from-[#d4af37] to-[#9c7811] text-[#050914] rounded-full font-bold text-base md:text-lg transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.6)] hover:-translate-y-1 tracking-widest overflow-hidden inline-block cursor-pointer"
           >
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
             入場する
@@ -157,17 +197,15 @@ export default function Home() {
       </section>
 
       {/* 2. ABOUTセクション */}
-      <section id="about" className="relative w-full py-40 px-12 flex flex-col items-center bg-[#050914] z-10">
+      <section id="about" className="relative w-full py-40 px-[60px] md:px-[160px] flex flex-col items-center bg-[#050914] z-10">
         <div className="max-w-4xl w-full text-center">
           
-          {/* ここに about-animate クラスを追加 */}
           <div className="about-animate text-[#d4af37] text-4xl mb-6">🎪</div>
-          <h2 className="about-animate text-4xl md:text-5xl font-bold text-[#d4af37] mb-12 tracking-widest font-serif drop-shadow-md">
+          <h2 className="about-animate text-3xl md:text-5xl font-bold text-[#d4af37] mb-12 tracking-widest font-serif drop-shadow-md">
             ABOUT
           </h2>
           
-          <div className="space-y-8 text-lg md:text-xl text-gray-300 leading-relaxed font-light tracking-wider text-justify md:text-center">
-            {/* 各段落にも about-animate クラスを追加 */}
+          <div className="space-y-8 text-base md:text-xl text-gray-300 leading-relaxed font-light tracking-wider text-justify md:text-center">
             <p className="about-animate">
               私たちは、スケジュールアプリ「<strong className="text-[#d4af37] font-bold">trofa</strong>」を開発・運営しています。
             </p>
