@@ -140,14 +140,21 @@ export default function TrofaPage() {
       </section>
 
       {/* フィルムテープ（自動ループ・カルーセル）セクション */}
-      <section className="relative w-full flex flex-col items-center z-10 shadow-[0_0_50px_rgba(0,0,0,0.8)] my-10">
+      <section className="relative w-full flex flex-col items-center z-10 my-10">
         
-        {/* 上のビデオテープ */}
-        <div className="w-full h-8 md:h-10 bg-black border-y-2 border-[#d4af37]/40 relative z-20 shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
-          <div className="absolute inset-0 opacity-80" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #050914 0px, #050914 20px, transparent 20px, transparent 40px)' }}></div>
+        {/* 🌟 上の赤いローラー ＆ ビデオテープ */}
+        <div className="w-full flex flex-col relative z-20 shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+          {/* ローラー（赤い円柱と溝） */}
+          <div className="w-full h-3 md:h-5 bg-gradient-to-b from-[#2a0408] via-[#d71b3b] to-[#2a0408] border-t-2 border-[#d4af37]/50 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-60" style={{ backgroundImage: 'repeating-linear-gradient(90deg, rgba(0,0,0,0.8) 0px, rgba(0,0,0,0.8) 4px, transparent 4px, transparent 12px)' }}></div>
+          </div>
+          {/* フィルムの穴（元のテープ） */}
+          <div className="w-full h-6 md:h-8 bg-black border-y border-[#d4af37]/40 relative">
+            <div className="absolute inset-0 opacity-80" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #050914 0px, #050914 20px, transparent 20px, transparent 40px)' }}></div>
+          </div>
         </div>
 
-        {/* 🌟 横スクロール・コマコンテナ (items-stretch に変更し、pyを削除してテープが上下に届くように) */}
+        {/* 横スクロール・コマコンテナ */}
         <div 
           ref={carouselRef}
           onScroll={handleScroll}
@@ -161,10 +168,8 @@ export default function TrofaPage() {
           {extendedFeatures.map((f, i) => (
             <div key={i} className="flex-shrink-0 snap-center flex items-stretch">
               
-              {/* 🌟 カード本体（上下にマージンを持たせて帯から離し、左右にマージンを持たせてテープから離す） */}
+              {/* カード本体 */}
               <div className="w-[65vw] md:w-[32vw] max-w-md bg-[#1a0508] border border-[#d4af37]/30 rounded-xl shadow-2xl flex flex-col p-4 my-8 md:my-10 mx-2 md:mx-4 relative group z-10">
-                
-                {/* 📸 画像プレースホルダー */}
                 <div className="w-full aspect-video bg-[#050914] rounded-lg flex items-center justify-center border-2 border-dashed border-[#d4af37]/50 relative overflow-hidden cursor-pointer">
                   <div className="flex flex-col items-center opacity-60 group-hover:opacity-100 transition-opacity">
                     <span className="text-3xl mb-2">{f.icon}</span>
@@ -173,7 +178,6 @@ export default function TrofaPage() {
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
 
-                {/* テキストエリア */}
                 <div className="w-full text-center mt-4">
                   <div className="text-[#d4af37] text-xs tracking-[0.3em] font-bold mb-1">{f.subtitle}</div>
                   <h3 className="text-lg md:text-xl font-bold mb-2 font-serif text-white">{f.title}</h3>
@@ -181,7 +185,7 @@ export default function TrofaPage() {
                 </div>
               </div>
 
-              {/* 🌟 赤い連結テープ（上下の帯にピッタリくっつくように items-stretch で広がり、左右に少し隙間） */}
+              {/* 赤い連結テープ */}
               {i !== extendedFeatures.length - 1 && (
                 <div className="w-[4vw] md:w-[2.5vw] bg-gradient-to-b from-[#8b0000] via-[#d71b3b] to-[#8b0000] flex flex-col justify-evenly items-center shadow-[inset_0_0_10px_rgba(0,0,0,0.8)] border-x border-[#d4af37]/40 relative z-0 mx-2 md:mx-3">
                   <div className="w-full h-[2px] bg-black/60"></div>
@@ -195,9 +199,16 @@ export default function TrofaPage() {
           ))}
         </div>
 
-        {/* 下のビデオテープ */}
-        <div className="w-full h-8 md:h-10 bg-black border-y-2 border-[#d4af37]/40 relative z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.8)]">
-          <div className="absolute inset-0 opacity-80" style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 20px, #050914 20px, #050914 40px)' }}></div>
+        {/* 🌟 下の赤いローラー ＆ ビデオテープ */}
+        <div className="w-full flex flex-col relative z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.8)]">
+          {/* フィルムの穴（元のテープ） */}
+          <div className="w-full h-6 md:h-8 bg-black border-y border-[#d4af37]/40 relative">
+            <div className="absolute inset-0 opacity-80" style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 20px, #050914 20px, #050914 40px)' }}></div>
+          </div>
+          {/* ローラー（赤い円柱と溝） */}
+          <div className="w-full h-3 md:h-5 bg-gradient-to-b from-[#2a0408] via-[#d71b3b] to-[#2a0408] border-b-2 border-[#d4af37]/50 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-60" style={{ backgroundImage: 'repeating-linear-gradient(90deg, rgba(0,0,0,0.8) 0px, rgba(0,0,0,0.8) 4px, transparent 4px, transparent 12px)' }}></div>
+          </div>
         </div>
         
       </section>
