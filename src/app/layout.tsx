@@ -31,3 +31,30 @@ export default function RootLayout({
     </html>
   );
 }
+
+// 👇 これを追加（先ほど作った部品をインポート）
+import TentMenu from "@/components/TentMenu"; 
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "trofa | スケジュールを、アトラクションに。",
+  description: "スケジュールアプリtrofaの開発会社コーポレートサイト",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="ja">
+      <body className={inter.className}>
+        {/* 👇 これを追加（ウェブサイト全体にメニューボタンを配置） */}
+        <TentMenu />
+        
+        {children}
+      </body>
+    </html>
+  );
+}
