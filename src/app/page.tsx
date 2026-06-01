@@ -2,64 +2,91 @@
 
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
 export default function Home() {
+  const mainRef = useRef<HTMLElement>(null);
   const balloonsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (balloonsRef.current) {
-      const balloons = balloonsRef.current.children;
-      Array.from(balloons).forEach((balloon) => {
-        gsap.set(balloon, {
-          y: '100vh',
-          x: `random(5, 95)vw`,
-          scale: `random(0.4, 0.8)`,
-        });
+    // GSAPのプラグインを登録
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-        gsap.to(balloon, {
-          y: '-10vh',
-          duration: `random(15, 25)`,
-          repeat: -1,
-          ease: 'none',
-          delay: `random(0, 10)`,
-        });
+    // Next.jsでGSAPを安全に動かすためのコンテキスト（クリーンアップ用）
+    const ctx = gsap.context(() => {
+      
+      // 1. 風船のアニメーション
+      if (balloonsRef.current) {
+        const balloons = balloonsRef.current.children;
+        Array.from(balloons).forEach((balloon) => {
+          gsap.set(balloon, {
+            y: '100vh',
+            x: `random(5, 95)vw`,
+            scale: `random(0.4, 0.8)`,
+          });
 
-        gsap.to(balloon, {
-          x: '+=40',
-          duration: `random(3, 5)`,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
+          gsap.to(balloon, {
+            y: '-10vh',
+            duration: `random(15, 25)`,
+            repeat: -1,
+            ease: 'none',
+            delay: `random(0, 10)`,
+          });
+
+          gsap.to(balloon, {
+            x: '+=40',
+            duration: `random(3, 5)`,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+          });
         });
+      }
+
+      // 2. ABOUTセクションのスクロールアニメーション
+      // #about セクションが画面の80%の高さに来たら発動
+      gsap.from('.about-animate', {
+        scrollTrigger: {
+          trigger: '#about',
+          start: 'top 80%', 
+        },
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        stagger: 0.2, // 複数の要素を0.2秒ずらして順番に出現させる
+        ease: 'power3.out',
       });
-    }
+
+    }, mainRef);
+
+    return () => ctx.revert(); // コンポーネントが破棄されたらアニメーションもリセット
   }, []);
+
+  // 3. ボタンを押した時のスムーススクロール処理
+  const handleEnterClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // #about の位置まで、1.2秒かけて少し緩急（power3.inOut）をつけて移動
+    gsap.to(window, { duration: 1.2, scrollTo: '#about', ease: 'power3.inOut' });
+  };
 
   const balloonColors = ['bg-[#d4af37]', 'bg-[#8b0000]', 'bg-[#1a2a5e]', 'bg-[#ffb703]'];
 
   return (
-    <main className="min-h-screen bg-[#050914] text-white font-sans relative">
+    <main ref={mainRef} className="min-h-screen bg-[#050914] text-white font-sans relative">
       
-      {/* =========================================
-          共通装飾：両端のビデオフィルム（チケット）風の縁
-      ========================================= */}
-      {/* 左側の縁 */}
+      {/* 共通装飾：両端のビデオフィルム（チケット）風の縁 */}
       <div className="fixed top-0 left-0 w-6 md:w-8 h-full bg-[#3a0810] z-40 border-r-[3px] border-[#d4af37] shadow-[10px_0_20px_rgba(0,0,0,0.9)] flex justify-center py-2 opacity-95">
-        {/* フィルムの穴（パーフォレーション）を表現した点線 */}
         <div className="w-full mx-1 h-full border-x-[4px] border-dashed border-[#d4af37]/40"></div>
       </div>
-
-      {/* 右側の縁 */}
       <div className="fixed top-0 right-0 w-6 md:w-8 h-full bg-[#3a0810] z-40 border-l-[3px] border-[#d4af37] shadow-[-10px_0_20px_rgba(0,0,0,0.9)] flex justify-center py-2 opacity-95">
         <div className="w-full mx-1 h-full border-x-[4px] border-dashed border-[#d4af37]/40"></div>
       </div>
 
-      {/* =========================================
-          1. ヒーローセクション（トップ画面）
-      ========================================= */}
+      {/* 1. ヒーローセクション */}
       <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
         
-        {/* 上部の装飾：サーカステントの天幕（復刻） */}
+        {/* 上部の天幕装飾 */}
         <div 
           className="absolute top-0 left-0 w-full h-16 md:h-24 z-30 shadow-[0_20px_40px_rgba(0,0,0,0.9)] border-b-4 border-[#d4af37]"
           style={{
@@ -67,12 +94,11 @@ export default function Home() {
             borderRadius: '0 0 30% 30% / 0 0 100% 100%'
           }}
         >
-          {/* テント内部の暗がり（立体感） */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-transparent rounded-[inherit]"></div>
         </div>
 
-        {/* 背景：ぼかした巨大なサーカステントと夜空のグラデーション */}
-        <div className="absolute inset-0 z-0 px-8"> {/* 左右の縁に被らないよう余白を確保 */}
+        {/* 背景 */}
+        <div className="absolute inset-0 z-0 px-8">
           <div 
             className="absolute inset-0 opacity-30 blur-[8px]"
             style={{
@@ -114,10 +140,14 @@ export default function Home() {
             あなたの1日を、<br className="md:hidden" />最高のアトラクションに。
           </p>
           
-          <a href="#about" className="group relative px-12 py-5 bg-gradient-to-b from-[#d4af37] to-[#9c7811] text-[#050914] rounded-full font-bold text-lg transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.6)] hover:-translate-y-1 tracking-widest overflow-hidden inline-block">
+          {/* ボタンの挙動を onClick ＆ スムーススクロール に変更 */}
+          <button 
+            onClick={handleEnterClick} 
+            className="group relative px-12 py-5 bg-gradient-to-b from-[#d4af37] to-[#9c7811] text-[#050914] rounded-full font-bold text-lg transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.6)] hover:-translate-y-1 tracking-widest overflow-hidden inline-block cursor-pointer"
+          >
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
             入場する
-          </a>
+          </button>
         </div>
         
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center animate-bounce opacity-70">
@@ -126,30 +156,30 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================================
-          2. ABOUTセクション
-      ========================================= */}
-      <section id="about" className="relative w-full py-32 px-12 flex flex-col items-center bg-[#050914] z-10">
+      {/* 2. ABOUTセクション */}
+      <section id="about" className="relative w-full py-40 px-12 flex flex-col items-center bg-[#050914] z-10">
         <div className="max-w-4xl w-full text-center">
           
-          <div className="text-[#d4af37] text-4xl mb-6">🎪</div>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#d4af37] mb-12 tracking-widest font-serif drop-shadow-md">
+          {/* ここに about-animate クラスを追加 */}
+          <div className="about-animate text-[#d4af37] text-4xl mb-6">🎪</div>
+          <h2 className="about-animate text-4xl md:text-5xl font-bold text-[#d4af37] mb-12 tracking-widest font-serif drop-shadow-md">
             ABOUT
           </h2>
           
           <div className="space-y-8 text-lg md:text-xl text-gray-300 leading-relaxed font-light tracking-wider text-justify md:text-center">
-            <p>
+            {/* 各段落にも about-animate クラスを追加 */}
+            <p className="about-animate">
               私たちは、スケジュールアプリ「<strong className="text-[#d4af37] font-bold">trofa</strong>」を開発・運営しています。
             </p>
-            <p>
+            <p className="about-animate">
               仕事、勉強、プライベート。<br />
               日々の予定をこなすことは、時に退屈で、単調な作業になりがちです。
             </p>
-            <p>
+            <p className="about-animate">
               もしも、毎日のタスクが遊園地のアトラクションだったら？<br />
               もしも、カレンダーを開くたびにサーカスの幕が上がるようなワクワクを感じられたら？
             </p>
-            <p>
+            <p className="about-animate">
               「trofa」は、ただ時間を管理するだけのツールではありません。<br />
               あなたの日常をエンターテインメントに変え、<br />
               毎日のパフォーマンスを最大化するための魔法のチケットです。
